@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Circles</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 425px;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <script src="solarsystem.js"></script>
+  <body>
+    <div id="map"></div>
+    <script>
+
+      function initMap() {
+		// Colmenarejo location (fountains is at 40.560688, -4.016429)
+		sunLocation = {lat: 40.560688, lng: -4.016429}  
+        // Create the map.
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 18,
+          center: sunLocation,
+          mapTypeId: 'terrain'
+        });
+
+        // Construct the circle for each value in citymap.
+        // Note: We scale the area of the circle based on the population.
+        for (var i = 0; i < solarSysytem.items.length; i++) {
+          console.log(i)
+		  // Get the planet/sun
+		  item = solarSysytem.getItem(i);
+		  // Add the orbit to the map.
+          var cityCircle = new google.maps.Circle({
+            strokeColor: item.color,
+            strokeOpacity: 1,
+            strokeWeight: 2,
+            fillColor: item.color,
+            fillOpacity: 0.0,
+            map: map,
+            center: sunLocation,
+            radius: item.distanceKm*1000
+          });
+        }
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmvUg8Wyk7JObfb7nNHpu1-dY--7DtywE&callback=initMap">
+    </script>
+  </body>
+</html>
