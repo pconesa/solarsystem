@@ -28,17 +28,18 @@
 		sunLocation = {lat: 40.560688, lng: -4.016429}  
         // Create the map.
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 18,
+          zoom: 16,
           center: sunLocation,
           mapTypeId: 'terrain'
         });
 
         // Construct the circle for each value in citymap.
         // Note: We scale the area of the circle based on the population.
-        for (var i = 0; i < solarSysytem.items.length; i++) {
-          console.log(i)
+        for (var i = 0; i < solarSystem.items.length; i++) {
+          
 		  // Get the planet/sun
-		  item = solarSysytem.getItem(i);
+		  item = solarSystem.getItem(i);
+		  
 		  // Add the orbit to the map.
           var cityCircle = new google.maps.Circle({
             strokeColor: item.color,
@@ -50,8 +51,20 @@
             center: sunLocation,
             radius: item.distanceKm*1000
           });
-        }
-      }
+		  // Add a marker of the planet/sun
+		  var marker = new google.maps.Marker({
+			position: {
+				lat: sunLocation.lat+km2Deg(item.distanceKm),
+				lng: sunLocation.lng},
+    		map: map,
+			icon: item.icon,
+    		title: item.name
+          });
+      	};
+	  };
+	  function km2Deg(km){
+		  return 360 * km / 40075
+	  };
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmvUg8Wyk7JObfb7nNHpu1-dY--7DtywE&callback=initMap">
