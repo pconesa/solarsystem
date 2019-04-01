@@ -58,7 +58,10 @@
 				lat: sunLocation.lat+km2Deg(item.distanceKm),
 				lng: sunLocation.lng},
     		map: map,
-			icon: item.icon,
+			icon: {
+					url: item.icon,
+					anchor: new google.maps.Point(24, 24)
+				  },
     		title: item.name
           });
       	};
