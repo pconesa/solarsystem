@@ -1,5 +1,5 @@
 var solarSystem ={
-	scale: Math.pow(10,9),
+	scale: Math.pow(10,8),
 	getItem: function(index){
 		item = this.items[index]
 		

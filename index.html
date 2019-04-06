@@ -4,11 +4,16 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <title>Sistema solar a escala: Colmenarejo.</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
-      #map {
+		.container-fluid, .row {
+			height: 100%;
+		}
+	  #map {
         height: 100%;
+		width: 80%;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
@@ -16,12 +21,20 @@
         margin: 0;
         padding: 0;
       }
+		#legend {
+			background-color: black;
+		}
 	  
     </style>
   </head>
   <script src="solarsystem.js"></script>
   <body>
-    <div id="map"></div>
+    <div class="container-fluid">
+  		<div class="row">
+	  		<div class="col-sm-8" id="map"></div>
+		 	<div class="col-sm-4" id="legend"></div>
+		</div>
+	</div>
     <script>
 
       function initMap() {
@@ -52,6 +65,13 @@
             center: sunLocation,
             radius: item.distanceKm*1000
           });
+			
+		  addMarker(item, map)
+      	};
+	  };
+		
+	  function addMarker(item, map){
+		  
 		  // Add a marker of the planet/sun
 		  var marker = new google.maps.Marker({
 			position: {
@@ -64,7 +84,45 @@
 				  },
     		title: item.name
           });
-      	};
+		  
+		  // Add an info window associated witht the marker
+		  var contentString = '<div id="content">'+
+			  '<div id="siteNotice">'+
+			  '</div>'+
+			  '<h1 id="firstHeading" class="firstHeading">' + item.name +'</h1>'+
+			  '<div id="bodyContent">'+
+			  '<p><b>'+ item.name +'</b>,  a esta escala, ' + solarSystem.scale + 
+			  ' veces mas pequeño, su distancia al centro seria de ' + prettyLength(item.distanceKm) +
+			  ' y su diametro seria de ' + prettyLength(item.sizeKm) + '.</p>'+
+			  '</div>'+
+			  '</div>';
+
+		  var infowindow = new google.maps.InfoWindow({
+			content: contentString
+		  });
+
+		  marker.addListener('click', function() {
+			infowindow.open(map, marker);
+		  });  
+	  };
+	  function prettyLength(lengthKm){
+		  
+		  if (lengthKm<0.00001){
+		  	newLength = lengthKm * 100000;
+		  	unit = 'mm'
+	  	  }
+		  else if (lengthKm<0.001){
+		  	newLength = lengthKm*10000;
+		  	unit = 'cm'
+		  }
+		  else if (lengthKm<1) {
+			newLength = lengthKm*1000;
+			unit = 'm'		  
+	  	  } else {
+			newLength = lengthKm
+		  	unit = 'km'	  
+		  }
+		  return newLength.toFixed(2) + ' ' + unit
 	  };
 	  function km2Deg(km){
 		  return 360 * km / 40075
