@@ -35,64 +35,120 @@
 		</div>
 	</div>
     <script>
+  	  var markers = []
+	  var orbits = []
+	  function placeSolarSystem(loc, map){
 
-      function initMap() {
-		// Colmenarejo location (fountains is at 40.560688, -4.016429)
-		sunLocation = {lat: 40.560688, lng: -4.016429}  
-        // Create the map.
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 16,
-          center: sunLocation,
-          mapTypeId: 'terrain'
-        });
-
-        // Construct the circle for each value in citymap.
+		// Construct the circle for each value in citymap.
         // Note: We scale the area of the circle based on the population.
         for (var i = 0; i < solarSystem.items.length; i++) {
           
 		  // Get the planet/sun
-		  item = solarSystem.getItem(i);
+		  item = solarSystem.items[i];
 		  
-		  // Add the orbit to the map.
-          var cityCircle = new google.maps.Circle({
+		  addOrbit(item, map, loc);
+			
+      	};
+
+	  }
+	  function moveSolarSystem(loc, map){
+
+		// Construct the circle for each value in citymap.
+        // Note: We scale the area of the circle based on the population.
+        moveOrbit(loc)
+
+	  }
+	  function addOrbit(item, map, sunLoc){
+  		  // Add the orbit to the map.
+          var orbit = new google.maps.Circle({
             strokeColor: item.color,
             strokeOpacity: 1,
             strokeWeight: 2,
             fillColor: item.color,
             fillOpacity: 0.0,
             map: map,
-            center: sunLocation,
-            radius: item.distanceKm*1000
+            center: sunLoc,
+            radius: item.scaledDistanceKm*1000
           });
-			
-		  addMarker(item, map)
-      	};
-	  };
+		  
+		  orbits.push(orbit)
+		  
+		  // Add the planet/sun
+		  planetIcon = addPlanetIcon(item, map, sunLoc);
+		  
+		  // add the planet to the orbit
+		  orbit.planetIcon = planetIcon;
+		  orbit.planet = item;
+		  
+		  // Listen to double click to set the sun location
+		  orbit.addListener('dblclick', function(e) {
+    	    // relocate the solar system
+    	    moveSolarSystem({lat: e.latLng.lat(), lng: e.latLng.lng()}, map)	
+      	  });
+
+	  }
+	  function moveOrbit(newSunLoc){
+		  for (var i = 0; i < orbits.length; i++) {
+			  orbit = orbits[i];
+			  orbit.setOptions({center:newSunLoc});
+			  // move the planet
+			  movePlanet(orbit.planetIcon, newSunLoc, orbit.planet)
+		  }
+	  }
+	  function movePlanet(marker, sunLoc, planet){
+		  newLocation = getPlanetLocation(planet, sunLoc);	  
+		  marker.setPosition(newLocation);
+	  }
+      function initMap() {
 		
-	  function addMarker(item, map){
+		// Initialize the solar system
+		solarSystem.setScale(Math.pow(10,9))
+		// Colmenarejo location (fountains is at 40.560688, -4.016429)
+		colmanarejo = {lat: 40.560688, lng: -4.016429}  
+        // Create the map.
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 16,
+          center: colmanarejo,
+          mapTypeId: 'terrain'
+        });
+		  
+		// Listen to double click to set the sun location
+		map.addListener('dblclick', function(e) {
+    		// relocate the solar system
+    		moveSolarSystem({lat: e.latLng.lat(), lng: e.latLng.lng()}, map)	
+      			
+  		});
+
+		placeSolarSystem(colmanarejo, map)
+	  };
+	  function getPlanetLocation(planet, sunLoc){
+		  return {lat: sunLoc.lat+km2Deg(planet.scaledDistanceKm),
+				  lng: sunLoc.lng}
+	  }
+	  function addPlanetIcon(planet, map, sunLoc){
 		  
 		  // Add a marker of the planet/sun
-		  var marker = new google.maps.Marker({
-			position: {
-				lat: sunLocation.lat+km2Deg(item.distanceKm),
-				lng: sunLocation.lng},
+		  var planetIcon = new google.maps.Marker({
+			position: getPlanetLocation(planet, sunLoc),
     		map: map,
 			icon: {
-					url: item.icon,
+					url: planet.icon,
 					anchor: new google.maps.Point(24, 24)
 				  },
-    		title: item.name
+    		title: planet.name
           });
+		  
+		  markers.push(planetIcon)
 		  
 		  // Add an info window associated witht the marker
 		  var contentString = '<div id="content">'+
 			  '<div id="siteNotice">'+
 			  '</div>'+
-			  '<h1 id="firstHeading" class="firstHeading">' + item.name +'</h1>'+
+			  '<h1 id="firstHeading" class="firstHeading">' + planet.name +'</h1>'+
 			  '<div id="bodyContent">'+
-			  '<p><b>'+ item.name +'</b>,  a esta escala, ' + solarSystem.scale + 
-			  ' veces mas pequeño, su distancia al centro seria de ' + prettyLength(item.distanceKm) +
-			  ' y su diametro seria de ' + prettyLength(item.sizeKm) + '.</p>'+
+			  '<p><b>'+ planet.name +'</b>,  a esta escala, ' + solarSystem.scale + 
+			  ' veces mas pequeño, su distancia al centro seria de ' + prettyLength(planet.scaledDistanceKm) +
+			  ' y su diametro seria de ' + prettyLength(planet.scaledSizeKm) + '.</p>'+
 			  '</div>'+
 			  '</div>';
 
@@ -100,9 +156,11 @@
 			content: contentString
 		  });
 
-		  marker.addListener('click', function() {
-			infowindow.open(map, marker);
-		  });  
+		  planetIcon.addListener('click', function() {
+			infowindow.open(map, planetIcon);
+		  }); 
+		  
+		  return planetIcon
 	  };
 	  function prettyLength(lengthKm){
 		  

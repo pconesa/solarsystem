@@ -1,16 +1,12 @@
 var solarSystem ={
-	scale: Math.pow(10,9),
-	getItem: function(index){
-		item = this.items[index]
-		
-		// Create a clone to the scale
-		var scaledItem = Object.assign({}, item);
-		// Apply the scale
-		scaledItem.distanceKm = item.distanceKm/this.scale;
-		scaledItem.sizeKm = item.sizeKm/this.scale;		
-		
-		return scaledItem;
-		
+	scale: 1,
+	setScale: function(newScale){
+		this.scale = newScale;
+		for (var i = 0 ; i< this.items.length; i++){
+			item = this.items[i];
+			item.scaledDistanceKm = item.distanceKm/this.scale;
+			item.scaledSizeKm = item.sizeKm/this.scale;		
+		}
 	},
 	items:[
 		{
