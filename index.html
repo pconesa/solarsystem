@@ -90,7 +90,7 @@
 	  function moveOrbit(newSunLoc){
 		  for (var i = 0; i < orbits.length; i++) {
 			  orbit = orbits[i];
-			  orbit.setOptions({center:newSunLoc});
+			  orbit.setOptions({center:newSunLoc, radius: orbit.planet.scaledDistanceKm*1000});
 			  // move the planet
 			  movePlanet(orbit.planetIcon, newSunLoc, orbit.planet)
 		  }
@@ -140,8 +140,10 @@
 		  
 		  markers.push(planetIcon)
 		  
-		  // Add an info window associated witht the marker
-		  var contentString = '<div id="content">'+
+		  planetIcon.addListener('click', function() {
+			  
+			// Build the info window  
+		    var contentString = '<div id="content">'+
 			  '<div id="siteNotice">'+
 			  '</div>'+
 			  '<h1 id="firstHeading" class="firstHeading">' + planet.name +'</h1>'+
@@ -152,11 +154,10 @@
 			  '</div>'+
 			  '</div>';
 
-		  var infowindow = new google.maps.InfoWindow({
-			content: contentString
-		  });
-
-		  planetIcon.addListener('click', function() {
+		    var infowindow = new google.maps.InfoWindow({
+			  content: contentString
+		    });
+	  
 			infowindow.open(map, planetIcon);
 		  }); 
 		  
