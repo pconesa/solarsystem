@@ -127,6 +127,9 @@
 	  }
 	  function addPlanetIcon(planet, map, sunLoc){
 		  
+		  if (onlyOrbits == true){
+			  return
+		  }
 		  // Add a marker of the planet/sun
 		  var planetIcon = new google.maps.Marker({
 			position: getPlanetLocation(planet, sunLoc),
