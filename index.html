@@ -35,6 +35,7 @@
 		</div>
 	</div>
     <script>
+	  var onlyOrbits = False;
   	  var markers = []
 	  var orbits = []
 	  function placeSolarSystem(loc, map){
@@ -127,8 +128,8 @@
 	  }
 	  function addPlanetIcon(planet, map, sunLoc){
 		  
-		  if (! (onlyOrbits == undefined)){
-			  return
+		  if (onlyOrbits){
+			return
 		  }
 		  // Add a marker of the planet/sun
 		  var planetIcon = new google.maps.Marker({
