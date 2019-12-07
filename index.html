@@ -166,11 +166,11 @@
 	  function prettyLength(lengthKm){
 		  
 		  if (lengthKm<0.00001){
-		  	newLength = lengthKm * 100000;
+		  	newLength = lengthKm * 1000000;
 		  	unit = 'mm'
 	  	  }
 		  else if (lengthKm<0.001){
-		  	newLength = lengthKm*10000;
+		  	newLength = lengthKm*100000;
 		  	unit = 'cm'
 		  }
 		  else if (lengthKm<1) {
